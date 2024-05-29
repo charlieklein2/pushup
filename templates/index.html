@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push-up counter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .centered-text {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="centered-text">
+        <h1>Push-up Counter</h1>
+        <p>This application counts the number of push-ups performed in a video feed. </p>
+        <br>
+        <p>Choose your video source:</p>
+        <a href="live-feed.html">
+            <button id="webcamButton">Use Webcam</button>
+        </a>
+        <input type="file" id="videoFile" accept="video/mp4" style="display: none;">
+        <button id="uploadButton">Upload Video</button>
+
+    </div>
+    
+    
+    
+</body>
+</html>
