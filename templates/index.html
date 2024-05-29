@@ -17,7 +17,7 @@
         <p>This application counts the number of push-ups performed in a video feed. </p>
         <br>
         <p>Choose your video source:</p>
-        <a href="live-feed.html">
+        <a href="{{ url_for('live_feed') }}">
             <button id="webcamButton">Use Webcam</button>
         </a>
         <input type="file" id="videoFile" accept="video/mp4" style="display: none;">

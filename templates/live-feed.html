@@ -3,16 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live feed</title>
+    <title>Webcam View</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
+        #video-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            max-height: 700px;
+            margin: 0 auto;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+        }
         .centered-text {
             text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to live feed</h1>
+    <div class="centered-text">
+        <h1>Webcam View</h1>
+        <div id="video-container">
+            <video id="video" autoplay playsinline></video>
+        </div>
+        <br>
+        <button id="uploadButton">Start counting</button>
+    </div>
+
+    <script>
+        // Get video element
+    const video = document.getElementById('video');
+
+    // Get user media (webcam access)
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            // Attach stream to video element
+            video.srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error('Error accessing webcam:', error);
+        });
+    </script>
 </body>
 </html>
 
