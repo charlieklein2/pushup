@@ -5,13 +5,22 @@ import mediapipe as mp
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose 
 
-count = 0
-position = None
+test1 = '/Users/charlie/Desktop/test1.mp4'
+test2 = '/Users/charlie/Desktop/test2.mp4'
 
-cooldown_duration = 15  # Cooldown duration in frames (adjust as needed)
+cap = cv.VideoCapture(test1)
+
+count = 0
+direction = "down" # either "down", or "fix"
+cooldown_duration = 10  # Cooldown duration in frames (adjust as needed)
 cooldown_timer = 0
 
-total_frames = 0
+font = cv.FONT_HERSHEY_SIMPLEX
+org = (50, 50) 
+font_scale = 2
+color = (255, 255, 255)  
+thickness = 2
+line_type = cv.LINE_AA
 
 def calculate_angle(a, b, c):
     a = np.array(a)
@@ -29,11 +38,6 @@ def distance(a, b):
     a = np.array(a)
     b = np.array(b)
     return np.linalg.norm(a - b)
-
-test1 = '/Users/charlie/Desktop/test1.mp4'
-test2 = '/Users/charlie/Desktop/test2.mp4'
-
-cap = cv.VideoCapture(test1)
 
 # can change confidence levels later
 with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
@@ -56,59 +60,55 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
 
             # check for left side or right side - TODO: same for rightside
             shoulder_left = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, 
-                             landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y,
-                             landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].z]
+                             landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
             hip_left = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, 
-                        landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y, 
-                        landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].z]
+                        landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
             ankle_left = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x, 
-                          landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y, 
-                          landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].z]
+                          landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
             elbow_left = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x, 
-                          landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y,
-                          landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].z]
+                          landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
             wrist_left = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x, 
-                          landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y, 
-                          landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].z]
+                          landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+            shoulder_right = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, 
+                            landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+            hip_right = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,
+                            landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+            knee_right = [landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x, 
+                            landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y]
+            ankle_right = [landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x, 
+                            landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y]
+            elbow_right = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x, 
+                            landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+            wrist_right = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x, 
+                            landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
 
-            plank_angle = calculate_angle(shoulder_left, hip_left, ankle_left)
-            elbow_angle = calculate_angle(shoulder_left, elbow_left, wrist_left)
+            plank_angle_left = calculate_angle(shoulder_left, hip_left, ankle_left)
+            elbow_angle_left = calculate_angle(shoulder_left, elbow_left, wrist_left)
+            plank_angle_right = calculate_angle(shoulder_right, hip_right, ankle_right)
+            elbow_angle_right = calculate_angle(shoulder_right, elbow_right, wrist_right)
 
-            in_plank_position = (165 <= plank_angle) and (plank_angle <= 185)
+            in_plank_position = (((160 < plank_angle_left) and (plank_angle_left <= 185)) or 
+                                ((160 < plank_angle_right) and (plank_angle_right <= 185)))
+            shoulders_above_elbows = (elbow_angle_left > 90) and (elbow_angle_right > 90)
 
             if cooldown_timer == 0:
                 if in_plank_position:
-                    if shoulder_left[1] >= elbow_left[1]:
-                        position = "down"
-                    if shoulder_left[1] <= elbow_left[1] and position == "down":
-                        position = "up"
-                        count += 1
+                    if shoulders_above_elbows and direction == "up":
+                        count += 0.5
+                        direction = "down"
                         print(count)
-                        cooldown_timer = cooldown_duration
+                         
+                    elif (not shoulders_above_elbows) and direction == "down":
+                        count += 0.5
+                        direction = "up"
+                        print(count)
+                        
 
+            cv.putText(image, "Push-up count: " + str(count), org, font, font_scale, color, thickness, line_type)
+                    
+                   
             if cooldown_timer > 0:
                 cooldown_timer -= 1
-            
-
-            """
-            mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-
-            for id, im in enumerate(results.pose_landmarks.landmark):
-                height, width, _ = image.shape
-                x, y = int(im.x * width), int(im.y * height)
-                coords.append([id, x, y])
-
-            # 11 & 12 are shoulder points and 13 & 14 are elbow points.  
-            # to do from here: make the logic here more robust               
-            if len(coords) != 0: 
-                if coords[12][2] >= coords[14][2] and coords[11][2] >= coords[13][2]:
-                    position = "down"
-                if coords[12][2] <= coords[14][2] and coords[11][2] <= coords[13][2] and  position == "down":
-                    position = "up"
-                    count += 1
-                    print(count)
-            """
-
 
         cv.imshow('frame', image)
         if cv.waitKey(10) & 0xFF == ord('q'):
