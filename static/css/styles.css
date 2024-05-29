@@ -33,10 +33,10 @@ p {
     margin-bottom: 20px;
 }
 
-.button {
+button {
     display: inline-block;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
     color: #fff;
@@ -44,11 +44,14 @@ p {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    text-decoration: none;
+    text-align: center;
     transition: background-color 0.3s ease;
+
 }
 
-.button:hover {
-    background-color: #0056b3;
+button:hover {
+    background-color: #ffa500;
 }
 
 .input-file {

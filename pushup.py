@@ -5,10 +5,10 @@ import mediapipe as mp
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose 
 
-test1 = '/Users/charlie/Desktop/test1.mp4'
-test2 = '/Users/charlie/Desktop/test2.mp4'
+# test1 = '/Users/charlie/Desktop/test1.mp4'
+# test2 = '/Users/charlie/Desktop/test2.mp4'
 
-cap = cv.VideoCapture(test1)
+# cap = cv.VideoCapture(test1)
 
 count = 0
 direction = "down" # either "down", or "fix"
@@ -39,19 +39,14 @@ def distance(a, b):
     b = np.array(b)
     return np.linalg.norm(a - b)
 
-# can change confidence levels later
-with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-    while cap.isOpened():
-        ret, frame = cap.read()
-
-        if not ret:
-            print("No Camera or end of video")
-            break
+def process_frame(frame):
+    print("processing")
+    global direction, count, cooldown_timer
     
-        image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-        results = pose.process(image)
+    image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+    with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
 
-        coords = []
+        results = pose.process(image)
 
         if results.pose_landmarks:
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
@@ -110,11 +105,4 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
             if cooldown_timer > 0:
                 cooldown_timer -= 1
 
-        cv.imshow('frame', image)
-        if cv.waitKey(10) & 0xFF == ord('q'):
-            break
- 
-cap.release()
-cv.destroyAllWindows()
-
-print("Total pushups detected: " + str(count))
+        return image

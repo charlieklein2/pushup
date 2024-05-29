@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webcam View</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <style>
         #video-container {
             position: relative;
@@ -28,23 +29,49 @@
         <h1>Webcam View</h1>
         <div id="video-container">
             <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <img id="processed-frame" alt="Processed Frame" />
         </div>
         <br>
-        <button id="uploadButton">Start counting</button>
+        <button id="startCounting">Start counting</button>
     </div>
 
     <script>
-        // Get video element
-    const video = document.getElementById('video');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const processedFrame = document.getElementById('processed-frame');
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
 
-    // Get user media (webcam access)
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function(stream) {
-            // Attach stream to video element
-            video.srcObject = stream;
-        })
-        .catch(function(error) {
-            console.error('Error accessing webcam:', error);
+        // Get access to the webcam
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function(error) {
+                    console.log("Something went wrong with accessing the webcam!");
+                });
+        }
+
+        // Capture video frames and send to server
+        video.addEventListener('play', function() {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            function sendFrame() {
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const data = canvas.toDataURL('image/jpeg');
+                socket.emit('video_frame', data);
+                requestAnimationFrame(sendFrame);
+            }
+
+            sendFrame();
+        });
+
+        // Handle the processed frame from the server
+        socket.on('processed_frame', function(data) {
+            processedFrame.src = data.image;
         });
     </script>
 </body>
