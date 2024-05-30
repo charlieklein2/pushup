@@ -30,48 +30,77 @@
         <div id="video-container">
             <video id="video" autoplay playsinline></video>
             <canvas id="canvas" style="display: none;"></canvas>
-            <img id="processed-frame" alt="Processed Frame" />
+            <img id="processed-frame" alt="Processed Frame" style="display: none;"/>
         </div>
         <br>
-        <button id="startCounting">Start counting</button>
+        <button id="toggleCounting">Start counting</button>
     </div>
 
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const processedFrame = document.getElementById('processed-frame');
+        const toggleButton = document.getElementById('toggleCounting');
         const socket = io.connect('http://' + document.domain + ':' + location.port);
+        let capturing = false;
+        let stream = null;
 
         // Get access to the webcam
         if (navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function(stream) {
-                    video.srcObject = stream;
-                })
-                .catch(function(error) {
-                    console.log("Something went wrong with accessing the webcam!");
-                });
+            navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    frameRate: { ideal: 15, max: 15 } // Lower frame rate to 15 FPS
+                }
+            })
+            .then(function(mediaStream) {
+                stream = mediaStream;
+                video.srcObject = stream;
+            })
+            .catch(function(error) {
+                console.log("Something went wrong with accessing the webcam!");
+            });
         }
 
-        // Capture video frames and send to server
-        video.addEventListener('play', function() {
+        // Function to send video frames to the server
+        function sendFrame() {
+            if (!capturing) return;
             const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const data = canvas.toDataURL('image/jpeg');
+            socket.emit('video_frame', data);
+            requestAnimationFrame(sendFrame);
+        }
 
-            function sendFrame() {
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const data = canvas.toDataURL('image/jpeg');
-                socket.emit('video_frame', data);
-                requestAnimationFrame(sendFrame);
+        // Toggle counting on and off
+        toggleButton.addEventListener('click', function() {
+            if (!capturing) {
+                // Start capturing frames
+                capturing = true;
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                toggleButton.textContent = 'Stop counting';
+                video.style.display = 'none';
+                processedFrame.style.display = 'block';
+                sendFrame();
+            } else {
+                // Stop capturing frames
+                capturing = false;
+                video.srcObject = stream; // Revert to webcam feed
+                video.style.display = 'block';
+                processedFrame.style.display = 'none';
+                toggleButton.textContent = 'Start counting';
             }
-
-            sendFrame();
         });
 
         // Handle the processed frame from the server
         socket.on('processed_frame', function(data) {
-            processedFrame.src = data.image;
+            if (capturing) {
+                // Decode the base64 image and update the img element
+                
+                processedFrame.src = data.image;
+            }
         });
     </script>
 </body>

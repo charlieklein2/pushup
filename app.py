@@ -19,7 +19,6 @@ def live_feed():
 
 @socketio.on('video_frame')
 def handle_video_frame(data):
-    print("getting here")
     # Decode the image from base64
     frame = base64.b64decode(data.split(',')[1])
     np_frame = np.frombuffer(frame, dtype=np.uint8)
