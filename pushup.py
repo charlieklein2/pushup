@@ -6,19 +6,12 @@ mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose 
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-
-# test1 = '/Users/charlie/Desktop/test1.mp4'
-# test2 = '/Users/charlie/Desktop/test2.mp4'
-
-# cap = cv.VideoCapture(test1)
-
-count = 0
+#count = 0
 direction = "down" # either "down", or "fix"
 cooldown_duration = 20  # Cooldown duration in frames (adjust as needed)
 cooldown_timer = 0
 
 font = cv.FONT_HERSHEY_SIMPLEX
-org = (25, 25) 
 font_scale = 2
 color = (255, 255, 255)  
 thickness = 2
@@ -41,8 +34,8 @@ def distance(a, b):
     b = np.array(b)
     return np.linalg.norm(a - b)
 
-def process_frame(frame):
-    global direction, count, cooldown_timer
+def process_frame(frame, count):
+    global direction, cooldown_timer
     
     image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
@@ -53,7 +46,6 @@ def process_frame(frame):
         
         landmarks = results.pose_landmarks.landmark
 
-        # check for left side or right side - TODO: same for rightside
         shoulder_left = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, 
                             landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
         hip_left = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, 
@@ -64,6 +56,9 @@ def process_frame(frame):
                         landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
         wrist_left = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x, 
                         landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+        foot_left = [landmarks[mp_pose.PoseLandmark.LEFT_FOOT_INDEX.value].x, 
+                        landmarks[mp_pose.PoseLandmark.LEFT_FOOT_INDEX.value].y]
+
         shoulder_right = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, 
                         landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
         hip_right = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,
@@ -74,14 +69,18 @@ def process_frame(frame):
                         landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
         wrist_right = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x, 
                         landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+        foot_right = [landmarks[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX.value].x, 
+                        landmarks[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX.value].y]
 
         plank_angle_left = calculate_angle(shoulder_left, hip_left, ankle_left)
         elbow_angle_left = calculate_angle(shoulder_left, elbow_left, wrist_left)
         plank_angle_right = calculate_angle(shoulder_right, hip_right, ankle_right)
         elbow_angle_right = calculate_angle(shoulder_right, elbow_right, wrist_right)
 
-        in_plank_position = (((160 < plank_angle_left) and (plank_angle_left <= 185)) or 
-                            ((160 < plank_angle_right) and (plank_angle_right <= 185)))
+        in_plank_position = ((((160 < plank_angle_left) and (plank_angle_left <= 185)) or 
+                            ((160 < plank_angle_right) and (plank_angle_right <= 185))) and 
+                            ((abs(wrist_left[1] - ankle_left[1]) < 0.15) or (abs(wrist_right[1] - ankle_right[1]) < 0.15)))
+                            
         shoulders_above_elbows = (elbow_angle_left > 90) and (elbow_angle_right > 90)
 
         if cooldown_timer == 0:
@@ -95,10 +94,10 @@ def process_frame(frame):
                     direction = "up"
                     
 
-        cv.putText(image, "Push-up count: " + str(count), org, font, font_scale, color, thickness, line_type)
-                
-                
+        
+        cv.putText(image, "count: " + str(count), (25, 50) , font, font_scale, color, thickness, line_type)
+            
         if cooldown_timer > 0:
             cooldown_timer -= 1
 
-    return image
+    return cv.cvtColor(image, cv.COLOR_RGB2BGR), count

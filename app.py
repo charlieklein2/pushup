@@ -1,13 +1,13 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, jsonify
 import cv2 as cv
-from flask_socketio import SocketIO, emit
-import base64
-import numpy as np
-
 from pushup import process_frame
+import eventlet
+import eventlet.wsgi
+import socket
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+
+count = 0
 
 @app.route('/')
 def index():
@@ -15,23 +15,52 @@ def index():
 
 @app.route('/live-feed')
 def live_feed():
-    return render_template('live-feed.html')
+    global count
+    return render_template('live-feed.html', count=count)
 
-@socketio.on('video_frame')
-def handle_video_frame(data):
-    # Decode the image from base64
-    frame = base64.b64decode(data.split(',')[1])
-    np_frame = np.frombuffer(frame, dtype=np.uint8)
-    img = cv.imdecode(np_frame, cv.IMREAD_COLOR)
+def generate_frames():
+    global count
+    cap = cv.VideoCapture(0)
+
+    if not cap.isOpened():
+        raise RuntimeError("Could not start camera.")
+
+    while True:
+        success, frame = cap.read()
+        if not success:
+            break
+
+        # Process the frame using your model
+        processed_frame, count = process_frame(frame, count)
+
+        # Encode the processed frame as JPEG
+        ret, buffer = cv.imencode('.jpg', processed_frame)
+        if not ret:
+            continue
+
+        frame = buffer.tobytes()
+
+        try:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        except (GeneratorExit, BrokenPipeError, socket.error):
+            print("Client disconnected or broken pipe")
+            cap.release()
+            break
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            cap.release()
+            break
+
+@app.route('/get_count')
+def get_count():
+    global count
+    return jsonify({'count': count})
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     
-    # Process the frame with your pushup counter logic
-    processed_frame = process_frame(img)
-    
-    # Encode the processed frame back to base64 to send to the client
-    _, buffer = cv.imencode('.jpg', processed_frame)
-    encoded_img = base64.b64encode(buffer).decode('utf-8')
-    emit('processed_frame', {'image': 'data:image/jpeg;base64,' + encoded_img})
 
 if __name__ == '__main__':
-    #app.run(debug=True)
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
+    eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 8080)), app)

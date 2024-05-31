@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Push-up counter</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        .centered-text {
-            text-align: center;
-        }
-        
-    </style>
 </head>
 <body>
     <div class="centered-text">
@@ -21,12 +15,9 @@
         <a href="{{ url_for('live_feed') }}">
             <button id="webcamButton">Use Webcam</button>
         </a>
-        <input type="file" id="videoFile" accept="video/mp4" style="display: none;">
+        <!--<input type="file" id="videoFile" accept="video/mp4" style="display: none;">-->
         <button id="uploadButton">Upload Video</button>
 
     </div>
-    
-    
-    
 </body>
 </html>
