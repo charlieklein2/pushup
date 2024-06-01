@@ -6,14 +6,14 @@ mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose 
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-#count = 0
+count = 0
 direction = "down" # either "down", or "fix"
 cooldown_duration = 20  # Cooldown duration in frames (adjust as needed)
 cooldown_timer = 0
 
 font = cv.FONT_HERSHEY_SIMPLEX
-font_scale = 2
-color = (255, 255, 255)  
+font_scale = 1
+color = (0, 0, 0)  
 thickness = 2
 line_type = cv.LINE_AA
 
@@ -34,8 +34,8 @@ def distance(a, b):
     b = np.array(b)
     return np.linalg.norm(a - b)
 
-def process_frame(frame, count):
-    global direction, cooldown_timer
+def process_frame(frame):
+    global direction, cooldown_timer, count
     
     image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
@@ -100,4 +100,4 @@ def process_frame(frame, count):
         if cooldown_timer > 0:
             cooldown_timer -= 1
 
-    return cv.cvtColor(image, cv.COLOR_RGB2BGR), count
+    return cv.cvtColor(image, cv.COLOR_RGB2BGR)

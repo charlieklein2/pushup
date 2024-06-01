@@ -7,19 +7,15 @@ import socket
 
 app = Flask(__name__)
 
-count = 0
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/live-feed')
 def live_feed():
-    global count
-    return render_template('live-feed.html', count=count)
+    return render_template('live-feed.html')
 
 def generate_frames():
-    global count
     cap = cv.VideoCapture(0)
 
     if not cap.isOpened():
@@ -31,7 +27,7 @@ def generate_frames():
             break
 
         # Process the frame using your model
-        processed_frame, count = process_frame(frame, count)
+        processed_frame = process_frame(frame)
 
         # Encode the processed frame as JPEG
         ret, buffer = cv.imencode('.jpg', processed_frame)
@@ -52,15 +48,9 @@ def generate_frames():
             cap.release()
             break
 
-@app.route('/get_count')
-def get_count():
-    global count
-    return jsonify({'count': count})
-
 @app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     
-
 if __name__ == '__main__':
     eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 8080)), app)

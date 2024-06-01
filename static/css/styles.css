@@ -82,8 +82,8 @@ a {
     margin: 0 auto;
 }
 
-video {
-    width: 100%;
+video, img {
+    width: 75%;
     height: auto;
 }
 .centered-text {

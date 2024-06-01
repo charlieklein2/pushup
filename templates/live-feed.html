@@ -4,28 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webcam View</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            // Function to update count dynamically
-            function updateCount() {
-                $.get('/get_count', function(data){
-                    $('#count').text(data.count);
-                });
-            }
-
-            // Update count every second
-            setInterval(updateCount, 1000);
-        });
-    </script>
 </head>
 <body>
-    <div>
+    <div class="centered-text">
         <h1>Push-up Counter with Webcam</h1>
-        <p>Make sure your full body is in view, then get in push-up position and start!</p>
-        <br>
-        <p>Count: <span id="count">0</span></p>
+        <p>Make sure your full body is in view, get in push-up position and start!</p>
         <img src="{{ url_for('video_feed') }}" alt="Processed Frame" />
+        <br>
+        <a href="{{ url_for('index') }}">
+            <button id="webcamButton">Return home</button>
+        </a>
     </div>
 </body>
 </html>
