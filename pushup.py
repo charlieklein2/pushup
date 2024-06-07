@@ -34,8 +34,8 @@ def distance(a, b):
     b = np.array(b)
     return np.linalg.norm(a - b)
 
-def process_frame(frame):
-    global direction, cooldown_timer, count
+def process_frame(frame, count):
+    global direction, cooldown_timer # , count
     
     image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
@@ -100,4 +100,4 @@ def process_frame(frame):
         if cooldown_timer > 0:
             cooldown_timer -= 1
 
-    return cv.cvtColor(image, cv.COLOR_RGB2BGR)
+    return cv.cvtColor(image, cv.COLOR_RGB2BGR), count

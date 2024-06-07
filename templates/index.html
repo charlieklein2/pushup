@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Push-up counter</title>
+    <title>Push-up Counter</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="centered-text">
         <h1>Push-up Counter</h1>
-        <p>This application counts the number of push-ups performed in a video feed </p>
+        <p>This application counts the number of push-ups performed via your webcam view</p>
         <br>
-        <p>Choose your video source:</p>
-        <a href="{{ url_for('live_feed') }}">
-            <button id="webcamButton">Use Webcam</button>
+        <a href="{{ url_for('login') }}">
+            <button id="logIn">Login</button>
         </a>
-        <!--<input type="file" id="videoFile" accept="video/mp4" style="display: none;">-->
-        <button id="uploadButton">Upload Video</button>
-
+        <a href="{{ url_for('register') }}">
+            <button id="register">Register</button>
+        </a>
+        </br>
+    </br>
+        <a href="{{ url_for('live_feed') }}">
+            <button id="register">Model Test</button>
+        </a>
     </div>
 </body>
 </html>
