@@ -59,7 +59,7 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                return redirect(url_for('dashboard'))
+                return redirect(url_for('about'))
 
     return render_template('login.html', form=form)
 
@@ -88,9 +88,13 @@ def register():
     return render_template('register.html', form=form)
 
 
-
+@app.route('/about')
+@login_required
+def about():
+    return render_template('about.html')
 
 @app.route('/live-feed')
+@login_required
 def live_feed():
     return render_template('live-feed.html')
 

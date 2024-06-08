@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="heading-container">
+            <div class="navbar-title">Push-up Counter</div>
+            <nav>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="{{url_for('live_feed')}}">Model</a></li>
+                    <li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
+                    <li><a href="{{url_for('logout')}}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="left-text">
+            <h2>Welcome to the Push-up Counter!</h2>
+            <h3>Overview</h3>
+            <p>This web application uses a computer vision model developed with OpenCV and Mediapipe to count the number of push-up performed in a live video feed.</p>
+            <h3>Using the Model</h3>
+            <p>To count push-ups, the model uses your built-in webcam to track your body movement. 
+                To ensure accurracy, make sure that your whole body is in view while you are performing your push-ups. 
+                In case these setup requirements prevent you from using the model, you can watch a demonstration of the model <a class="demo" href="">here</a>.</p>
+            <h3>Pushup-counting and The Leaderboard</h3>
+            <p>The Push-up Counter tracks how many total push-ups are associated with each account. 
+                Additionally, you can check out the leaderboard to see who has performed the most push-ups on this application!
+                Both of these metrics can be found in the Dashboard.</p>
+            <h3>Credits</h3>
+            <p>This project developed was by Charles Klein.</p>
+        </div>
+    </main>
+</body>

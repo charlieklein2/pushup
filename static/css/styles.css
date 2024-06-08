@@ -13,9 +13,20 @@ h1 {
     color: #333;
 }
 
-p {
-    font-size: 18px;
+h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #333;
+}
+h3 {
+    font-size: 24px;
+    color: #333;
+}
+
+p, .demo {
+    font-size: 16px;
     line-height: 1.6;
+    font-weight: lighter;
 }
 
 input[type="text"], input[type="password"], textarea {
@@ -70,6 +81,11 @@ video, img {
 }
 .centered-text {
     text-align: center;
+}
+
+.left-text {
+    text-align: left;
+    padding: 0 350px
 }
 
 /* NAVIGATION BAR STYLING BELOW */

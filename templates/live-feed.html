@@ -13,9 +13,9 @@
             <div class="navbar-title">Push-up Counter</div>
             <nav>
                 <ul>
+                    <li><a href="{{url_for('about')}}">About</a></li>
+                    <li><a href="#">Model</a></li>
                     <li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
-                    <li><a href="">Model</a></li>
-                    <li><a href="">Leaderboard</a></li>
                     <li><a href="{{url_for('logout')}}">Logout</a></li>
                 </ul>
             </nav>
@@ -23,7 +23,7 @@
     </header>
     <main>
         <div class="centered-text">
-            <p>Make sure your full body is in view, get in push-up position and start!</p>
+            <br>
             <img src="{{ url_for('video_feed') }}" alt="Processed Frame" />
             <br>
             <a href="{{ url_for('dashboard') }}">
