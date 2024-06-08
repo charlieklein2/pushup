@@ -7,21 +7,36 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <div class="centered-text">
-        <h1>Push-up Counter</h1>
-        <p>This application counts the number of push-ups performed via your webcam view</p>
-        <br>
-        <a href="{{ url_for('login') }}">
-            <button id="logIn">Login</button>
-        </a>
-        <a href="{{ url_for('register') }}">
-            <button id="register">Register</button>
-        </a>
+    <header>
+        <div class="heading-container">
+            <div class="navbar-title">Push-up Counter</div>
+            <nav>
+                <ul>
+                    <li><a href="">Dashboard</a></li>
+                    <li><a href="">Model</a></li>
+                    <li><a href="">Leaderboard</a></li>
+                    <li><a href="{{url_for('logout')}}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="centered-text">
+            <h1>Push-up Counter</h1>
+            <p>This application counts the number of push-ups performed via your webcam view</p>
+            <br>
+            <a href="{{ url_for('login') }}">
+                <button id="logIn">Login</button>
+            </a>
+            <a href="{{ url_for('register') }}">
+                <button id="register">Register</button>
+            </a>
+            </br>
         </br>
-    </br>
-        <a href="{{ url_for('live_feed') }}">
-            <button id="register">Model Test</button>
-        </a>
-    </div>
+            <a href="{{ url_for('live_feed') }}">
+                <button id="register">Model Test</button>
+            </a>
+        </div>
+    </main>
 </body>
 </html>

@@ -3,10 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <p>logged in!</p>
-    <a href="{{url_for('logout')}}">Press here to logout</a>
+    <header>
+        <div class="heading-container">
+            <div class="navbar-title">Push-up Counter</div>
+            <nav>
+                <ul>
+                    <li><a href="">Dashboard</a></li>
+                    <li><a href="{{url_for('live_feed')}}">Model</a></li>
+                    <li><a href="">Leaderboard</a></li>
+                    <li><a href="{{url_for('logout')}}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <p>logged in! Again</p>
+    </main>
 </body>

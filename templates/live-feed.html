@@ -3,19 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webcam View</title>
+    <title>Model</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <div class="centered-text">
-        <h1>Push-up Counter with Webcam</h1>
-        <p>Make sure your full body is in view, get in push-up position and start!</p>
-        <img src="{{ url_for('video_feed') }}" alt="Processed Frame" />
-        <br>
-        <a href="{{ url_for('index') }}">
-            <button id="webcamButton">Return home</button>
-        </a>
-    </div>
+    <header>
+        <div class="heading-container">
+            <div class="navbar-title">Push-up Counter</div>
+            <nav>
+                <ul>
+                    <li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
+                    <li><a href="">Model</a></li>
+                    <li><a href="">Leaderboard</a></li>
+                    <li><a href="{{url_for('logout')}}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="centered-text">
+            <p>Make sure your full body is in view, get in push-up position and start!</p>
+            <img src="{{ url_for('video_feed') }}" alt="Processed Frame" />
+            <br>
+            <a href="{{ url_for('dashboard') }}">
+                <button id="webcamButton">Return to Dashboard</button>
+            </a>
+        </div>
+    </main>
 </body>
 </html>

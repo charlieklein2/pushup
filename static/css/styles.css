@@ -1,17 +1,9 @@
 /* static/css/styles.css */
 body {
     font-family: 'Work Sans', sans-serif;
-    margin: 0;
-    padding:50px;
     background-color: #f8f9fa;
+    margin: 0;
     color: #333;
-}
-
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center; /* Center align text */
 }
 
 h1 {
@@ -24,16 +16,24 @@ h1 {
 p {
     font-size: 18px;
     line-height: 1.6;
-    margin-bottom: 20px;
 }
 
-.button-container {
+input[type="text"], input[type="password"], textarea {
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: block; /* Make input fields stacked */
+}
+
+.container {
     display: flex;
-    justify-content: center; /* Center align buttons */
-    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
 }
 
-button {
+button, input[type="submit"]{
     display: inline-block;
     padding: 10px 20px;
     font-size: 12px;
@@ -50,7 +50,7 @@ button {
 
 }
 
-button:hover {
+button:hover, input[type="submit"]:hover {
     background-color: #ffa500;
 }
 
@@ -58,28 +58,10 @@ button:hover {
     display: none;
 }
 
-#video {
-    width: 100%;
-    border-radius: 5px;
-}
-
-.result {
-    font-size: 24px;
-    font-weight: bold;
-    margin-top: 20px;
-    text-align: center;
-}
-
 a {
     text-decoration: none;
-}
-
-#video-container {
-    position: relative;
-    width: 100%;
-    max-width: 700px;
-    max-height: 700px;
-    margin: 0 auto;
+    font-size: 12px;
+    line-height: 1.6;
 }
 
 video, img {
@@ -89,3 +71,78 @@ video, img {
 .centered-text {
     text-align: center;
 }
+
+/* NAVIGATION BAR STYLING BELOW */
+
+.heading-container {
+    width: 80%;
+    margin: 0 auto;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px;
+}
+
+header {
+    background: #007bff
+}
+
+header::after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.navbar-title {
+    font-size: 24px;
+    font-weight: bold;
+    float: left;
+    color: white;
+    padding: 10px 0;
+}
+
+nav {
+    float: right;
+}
+
+nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+nav li {
+    display: inline-block;
+    margin-left: 70px;
+    position: relative;
+}
+
+nav a {
+    font-size: 14px;
+    color: white;
+    text-decoration: none
+}
+
+nav a:hover {
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+nav a::before {
+    content: '';
+    display: block;
+    height: 5px;
+    background-color: #ffa500;
+  
+    position: absolute;
+    bottom: -3px;
+    width: 0%;
+  
+    transition: all ease-in-out 250ms;
+  }
+  
+  nav a:hover::before {
+    width: 100%;
+  }
+

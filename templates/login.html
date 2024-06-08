@@ -7,16 +7,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <div class="centered-text">
-        <h1>Login Page</h1>
-
-        <form method="POST" action="">
-            {{ form.hidden_tag() }}
-            {{ form.username }}
-            {{ form.password }}
-            {{ form.submit }}
-        </form>
-
-        <a href="{{url_for('register')}}">Don't have an account? Sign Up</a>
-    <div>
+    <header>
+        <div class="heading-container">
+            <div class="navbar-title">Push-up Counter</div>
+            <nav>
+                <ul>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="centered-text">
+            <h1>Welcome to the Push-up Counter!</h1>
+            <div class="container">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    {{ form.username }}
+                    {{ form.password }}
+                    <br>
+                    {{ form.submit }}
+                </form>
+            </div>
+            <br>
+            <a href="{{url_for('register')}}">Don't have an account? Sign Up</a>
+        </div>
+    </main> 
 </body>
