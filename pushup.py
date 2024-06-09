@@ -34,9 +34,9 @@ def distance(a, b):
     b = np.array(b)
     return np.linalg.norm(a - b)
 
-def process_frame(frame, count):
-    global direction, cooldown_timer # , count
-    
+def process_frame(frame, local_count, user_count):
+    global direction, cooldown_timer 
+
     image = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
     results = pose.process(image)
@@ -86,18 +86,20 @@ def process_frame(frame, count):
         if cooldown_timer == 0:
             if in_plank_position:
                 if shoulders_above_elbows and direction == "up":
-                    count += 0.5
+                    local_count += 0.5
+                    user_count += 0.5
                     direction = "down"
                         
                 elif (not shoulders_above_elbows) and direction == "down":
-                    count += 0.5
+                    local_count += 0.5
+                    user_count += 0.5
                     direction = "up"
                     
 
         
-        cv.putText(image, "count: " + str(count), (25, 50) , font, font_scale, color, thickness, line_type)
+        cv.putText(image, "count: " + str(local_count), (25, 50) , font, font_scale, color, thickness, line_type)
             
         if cooldown_timer > 0:
             cooldown_timer -= 1
-
-    return cv.cvtColor(image, cv.COLOR_RGB2BGR), count
+    
+    return cv.cvtColor(image, cv.COLOR_RGB2BGR), local_count, user_count

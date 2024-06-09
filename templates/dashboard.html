@@ -21,6 +21,54 @@
         </div>
     </header>
     <main>
-        
+        <div class="left-text">
+            <h3>Progress</h3>
+            <p><b><span id="username"></span></b>, you have performed <b><span id="count"></span></b> push-ups on the Push-up Counter!</p>
+            
+            <h3>Leaderboard</h3>
+            <table id="user-table" border="1">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <script>
+            async function fetchUsers() {
+                const response = await fetch('/users');
+                const users = await response.json();
+                var rank = 1
+    
+                const tableBody = document.getElementById('user-table').querySelector('tbody');
+                tableBody.innerHTML = '';
+    
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${rank}</td>
+                        <td>${user.username}</td>
+                        <td>${user.count}</td>
+                    `;
+                    tableBody.appendChild(row);
+                    rank += 1
+                });
+            }
+
+            async function fetchCurrentUser() {
+                const response = await fetch('/current_user');
+                const user = await response.json();
+
+                document.getElementById('username').innerText = user.username;
+                document.getElementById('count').innerText = user.count;
+            }
+    
+            document.addEventListener('DOMContentLoaded', fetchUsers);
+            document.addEventListener('DOMContentLoaded', fetchCurrentUser);
+        </script>
     </main>
 </body>

@@ -22,19 +22,30 @@
     </header>
     <main>
         <div class="left-text">
-            <h2>Welcome to the Push-up Counter!</h2>
+            <h2><span id="username"></span>, Welcome to the Push-up Counter!</h2>
             <h3>Overview</h3>
             <p>This web application uses a computer vision model developed with OpenCV and Mediapipe to count the number of push-up performed in a live video feed.</p>
             <h3>Using the Model</h3>
             <p>To count push-ups, the model uses your built-in webcam to track your body movement. 
                 To ensure accurracy, make sure that your whole body is in view while you are performing your push-ups. 
                 In case these setup requirements prevent you from using the model, you can watch a demonstration of the model <a class="demo" href="">here</a>.</p>
-            <h3>Pushup-counting and The Leaderboard</h3>
+            <h3>Push-up Counting and The Leaderboard</h3>
             <p>The Push-up Counter tracks how many total push-ups are associated with each account. 
                 Additionally, you can check out the leaderboard to see who has performed the most push-ups on this application!
                 Both of these metrics can be found in the Dashboard.</p>
             <h3>Credits</h3>
             <p>This project developed was by Charles Klein.</p>
         </div>
+
+        <script>
+            async function fetchCurrentUser() {
+                const response = await fetch('/current_user');
+                const user = await response.json();
+
+                document.getElementById('username').innerText = user.username;
+                document.getElementById('count').innerText = user.count;
+            }
+            document.addEventListener('DOMContentLoaded', fetchCurrentUser);
+        </script>
     </main>
 </body>

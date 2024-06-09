@@ -85,7 +85,7 @@ video, img {
 
 .left-text {
     text-align: left;
-    padding: 0 350px
+    padding: 0 350px;
 }
 
 /* NAVIGATION BAR STYLING BELOW */
@@ -101,7 +101,7 @@ video, img {
 }
 
 header {
-    background: #007bff
+    background: #007bff;
 }
 
 header::after {
@@ -137,7 +137,7 @@ nav li {
 nav a {
     font-size: 14px;
     color: white;
-    text-decoration: none
+    text-decoration: none;
 }
 
 nav a:hover {
@@ -156,9 +156,31 @@ nav a::before {
     width: 0%;
   
     transition: all ease-in-out 250ms;
-  }
+}
   
-  nav a:hover::before {
+nav a:hover::before {
     width: 100%;
-  }
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+  
+table td, table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+  
+table tr:nth-child(even){background-color: #f2f2f2;}
+  
+table tr:hover {background-color: #ddd;}
+  
+table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #007bff;
+    color: white;
+}
 

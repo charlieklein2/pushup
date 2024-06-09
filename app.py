@@ -4,8 +4,7 @@ from flask_login import UserMixin, LoginManager, login_user, login_required, log
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
-from flask_bcrypt import Bcrypt
-from sqlalchemy.orm import Session
+from flask_bcrypt import Bcrypt 
 
 import cv2 as cv
 from pushup import process_frame
@@ -29,6 +28,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
+    count = db.Column(db.Integer, default=0)
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -47,6 +47,23 @@ class LoginForm(FlaskForm):
     password = PasswordField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Password"})
     submit = SubmitField("Login")
 
+@app.route('/current_user', methods=['GET'])
+@login_required
+def get_current_user():
+    user_data = {
+        'username': current_user.username,
+        'count': current_user.count
+    }
+    return jsonify(user_data)
+
+
+@app.route('/users', methods=['GET'])
+@login_required
+def get_users():
+    users = User.query.order_by(User.count.desc()).limit(10).all()
+    users_list = [{'username': user.username, 'count': user.count} for user in users]
+    return jsonify(users_list)
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))
@@ -62,6 +79,7 @@ def login():
                 return redirect(url_for('about'))
 
     return render_template('login.html', form=form)
+
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
@@ -98,8 +116,9 @@ def about():
 def live_feed():
     return render_template('live-feed.html')
 
-def generate_frames():
-    count = 0
+def generate_frames(user_id):
+    local_count = 0
+
     cap = cv.VideoCapture(0)
 
     if not cap.isOpened():
@@ -109,9 +128,15 @@ def generate_frames():
         success, frame = cap.read()
         if not success:
             break
-
+        with app.app_context():
         # Process the frame using your model
-        processed_frame, count = process_frame(frame, count)
+            user = db.session.get(User, user_id)
+            user_count = user.count
+            
+            processed_frame, local_count, user_count = process_frame(frame, local_count, user_count)
+
+            user.count = user_count
+            db.session.commit()
 
         # Encode the processed frame as JPEG
         ret, buffer = cv.imencode('.jpg', processed_frame)
@@ -134,7 +159,7 @@ def generate_frames():
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(generate_frames(current_user.id), mimetype='multipart/x-mixed-replace; boundary=frame')
     
 if __name__ == '__main__':
     app.run(debug=False)
