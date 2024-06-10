@@ -1,4 +1,9 @@
-Flask==3.0.3
-flask_socketio==5.3.6
-opencv-python-headless==4.9.0.80
-mediapipe==0.9.1.0
+flask
+flask_sqlalchemy
+flask_login
+flask_wtf
+flask_bcrypt
+python-dotenv
+opencv-python
+opencv-python-headless
+mediapipe
