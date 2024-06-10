@@ -6,9 +6,8 @@ mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose 
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-count = 0
 direction = "down" # either "down", or "fix"
-cooldown_duration = 20  # Cooldown duration in frames (adjust as needed)
+cooldown_duration = 20  # Cooldown duration in frames (can be adjusted)
 cooldown_timer = 0
 
 font = cv.FONT_HERSHEY_SIMPLEX

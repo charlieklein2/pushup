@@ -5,14 +5,19 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt 
+from dotenv import load_dotenv
+import os
 
 import cv2 as cv
 from pushup import process_frame
 
 app = Flask(__name__)
 
+load_dotenv()
+sql_key = os.getenv('key')
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SECRET_KEY'] = 'Y7XUbkxnZT5sSa9UP7hfS8STSmMDcmfP'
+app.config['SECRET_KEY'] = sql_key
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
