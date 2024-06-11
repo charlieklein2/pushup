@@ -7,3 +7,4 @@ python-dotenv
 opencv-python
 opencv-python-headless
 mediapipe
+gunicorn

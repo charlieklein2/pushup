@@ -166,5 +166,3 @@ def generate_frames(user_id):
 def video_feed():
     return Response(generate_frames(current_user.id), mimetype='multipart/x-mixed-replace; boundary=frame')
     
-if __name__ == '__main__':
-    app.run(debug=False)
