@@ -24,7 +24,53 @@
     <main>
         <div class="centered-text">
             <br>
-            <img src="{{ url_for('video_feed') }}" alt="Processed Frame" />
+            <video id="video" width="640" height="480" autoplay style="display: none;"></video>
+            <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+            <img id="processedFrame" alt="Processed Frame" />
+            <script>
+                const video = document.getElementById('video');
+                const processedFrame = document.getElementById('processedFrame');
+                let count = 0;
+        
+                // Request access to the webcam
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        video.srcObject = stream;
+                        count = 0;
+                        captureAndSend();
+                    })
+                    .catch(err => {
+                        console.error("Error accessing webcam: ", err);
+                    });
+        
+                async function captureAndSend() {
+                    const canvas = document.getElementById('canvas');
+                    const context = canvas.getContext('2d');
+        
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const dataURL = canvas.toDataURL('image/jpeg');
+        
+                    try {
+                        const response = await fetch('/process_frame', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ image: dataURL, count: count})
+                        });
+        
+                        const result = await response.json();
+                        processedFrame.src = 'data:image/jpeg;base64,' + result.image;
+                        console.log('Processed frame counts:', result.local_count, result.user_count);
+        
+                        count = result.local_count;
+                        
+                        captureAndSend();
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+            </script>
             <br>
             <a href="{{ url_for('dashboard') }}">
                 <button id="webcamButton">Record Count & Return to Dashboard</button>

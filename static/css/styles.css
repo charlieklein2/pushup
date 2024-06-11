@@ -79,6 +79,14 @@ video, img {
     width: 75%;
     height: auto;
 }
+
+#processedFrame {
+    width: 800px; /* Adjust width as needed */
+    height: 600px; /* Adjust height as needed */
+    /* Add additional styles to maintain aspect ratio */
+    object-fit: cover;
+}
+
 .centered-text {
     text-align: center;
 }

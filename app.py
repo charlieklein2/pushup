@@ -1,7 +1,9 @@
-from flask import Flask, redirect, render_template, Response, url_for, jsonify
+import base64
+from flask import Flask, redirect, render_template, Response, request, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
+import numpy as np
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt 
@@ -121,8 +123,32 @@ def about():
 def live_feed():
     return render_template('live-feed.html')
 
-def generate_frames(user_id):
+@app.route('/process_frame', methods=['POST'])
+def generate_frames():
+    frame = receive_frame()
+    if frame is None:
+        return jsonify({'error': 'Invalid frame'}), 400
+    
+    user = db.session.get(User, current_user.id)
+    user_count = user.count
+    local_count = request.json.get('count', 0)
+
+    processed_frame, local_count, user_count = process_frame(frame, local_count, user_count)
+
+    user.count = user_count
+    db.session.commit()
+
+    # Encode the processed frame as JPEG
+    ret, buffer = cv.imencode('.jpg', processed_frame)
+    if not ret:
+        return jsonify({'error': 'Failed to encode frame'}), 500
+
+    response_image = base64.b64encode(buffer).decode('utf-8')
+    return jsonify({'image': response_image, 'local_count': local_count, 'user_count': user_count})
+    
+    """
     local_count = 0
+    
 
     cap = cv.VideoCapture(0)
 
@@ -160,9 +186,25 @@ def generate_frames(user_id):
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
             cap.release()
-            break
+            break"""
 
-@app.route('/video_feed')
+"""@app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(current_user.id), mimetype='multipart/x-mixed-replace; boundary=frame')
+"""
+# no harm, no foul
+def receive_frame():
+    data = request.json
+    if not data or 'image' not in data:
+        return None
+
+    image_data = data['image']
+    image_data = image_data.split(',')[1]
+    image = base64.b64decode(image_data)
+    nparr = np.frombuffer(image, np.uint8)
+    frame = cv.imdecode(nparr, cv.IMREAD_COLOR)
     
+    return frame
+
+if __name__ == '__main__':
+    app.run(debug=True)
