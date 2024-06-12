@@ -1,3 +1,7 @@
-http://54.196.232.52 {
+www.pushupcounter.xyz {
+    redir https://pushupcounter.xyz{uri}
+}
+
+pushupcounter.xyz {
     reverse_proxy localhost:8000
 }
