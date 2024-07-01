@@ -1,3 +1,3 @@
 # Welcome to the Push-up Counter!
-<a href="pushupcounter.xyz"> pushupcounter.xyz<a>
+[pushupcounter.xyz](http://pushupcounter.xyz)
 
